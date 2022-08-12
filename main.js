@@ -1,9 +1,16 @@
 // Globals
 const controlButtons = document.querySelectorAll('.control');
 const colorValueEl = document.querySelector('#current__color');
-const colorsContainerEl = document.querySelector('.colors__container');
-const colorBlockEl = document.querySelectorAll('.color__block');
+let colorsContainerEl = document.querySelector('.colors__container');
+let colorBlockEl = [...document.querySelectorAll('.color__block')];
 let numberOfBlocks = colorBlockEl.length;
+let lastBlock = colorBlockEl[numberOfBlocks - 1];
+
+let updateBlocks = () => {
+  let colorBlockEl = [...document.querySelectorAll('.color__block')];
+  lastBlock = colorBlockEl[numberOfBlocks - 1];
+  return colorBlockEl;
+};
 
 // Reset game or Add or remove blocks based on control button press
 controlButtons.forEach((button) => {
@@ -37,12 +44,22 @@ newRandomColor();
 
 // Remove one color block (min 2)
 function removeColorBlock() {
-  let lastBlock = colorBlockEl[numberOfBlocks - 1];
-  lastBlock.remove();
+  if (numberOfBlocks === 2) {
+    return;
+  }
   numberOfBlocks -= 1;
-  console.log(colorBlockEl.length);
+  lastBlock.remove();
+  updateBlocks();
   return;
 }
 
 // Add one color block (max 6)
-function addColorBlock() {}
+function addColorBlock() {
+  if (numberOfBlocks === 6) {
+    return;
+  }
+  numberOfBlocks += 1;
+  colorsContainerEl.innerHTML += `<div class="color__block block-${numberOfBlocks}"></div>`;
+  updateBlocks();
+  return;
+}
