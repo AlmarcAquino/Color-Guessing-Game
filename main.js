@@ -5,6 +5,7 @@ let colorsContainerEl = document.querySelector('.colors__container');
 let colorBlockEl = [...document.querySelectorAll('.color__block')];
 let numberOfBlocks = colorBlockEl.length;
 let lastBlock = colorBlockEl[numberOfBlocks - 1];
+const scoreEl = document.querySelector('#score');
 let score = 0;
 
 let updateBlocks = () => {
@@ -13,12 +14,18 @@ let updateBlocks = () => {
   return colorBlockEl;
 };
 
+let updateScore = () => {
+  scoreEl.innerHTML = score;
+};
+
 // Reset game or Add or remove blocks based on control button press
 controlButtons.forEach((button) => {
   button.addEventListener('click', () => {
     switch (button.innerHTML) {
       case 'New Game':
-        newRandomColor();
+        score = 0;
+        updateScore();
+        shuffleBlockColors();
         break;
       case '-':
         removeColorBlock();
@@ -37,11 +44,13 @@ colorBlockEl.forEach((block) => {
       console.log('that is the correct block');
       block.classList.remove('correct');
       score++;
+      updateScore();
       shuffleBlockColors();
     } else {
       console.log('wrong block');
       block.classList.remove('correct');
       score = 0;
+      updateScore();
       shuffleBlockColors();
     }
   });
@@ -55,16 +64,14 @@ function newRandomColor() {
   }
   return rgbArray;
 }
-// call on start
-newRandomColor();
 
 // Shuffle block colors
 function shuffleBlockColors() {
   // Assign a random color to each block
-  console.log(colorBlockEl);
-  colorBlockEl.forEach(block, () => {
+  colorBlockEl.forEach((block) => {
     let rgbValues = newRandomColor();
     block.style.backgroundColor = `rgb(${rgbValues[0]}, ${rgbValues[1]}, ${rgbValues[2]})`;
+    block.classList.remove('correct');
   });
 
   let correctBlockRGB = newRandomColor();
@@ -74,6 +81,9 @@ function shuffleBlockColors() {
   randomBlock.classList.add(`correct`);
   randomBlock.style.backgroundColor = `rgb(${correctBlockRGB[0]}, ${correctBlockRGB[1]}, ${correctBlockRGB[2]})`;
 }
+// call on start
+shuffleBlockColors();
+updateScore();
 
 // Remove one color block (min 2)
 function removeColorBlock() {
@@ -83,6 +93,7 @@ function removeColorBlock() {
   numberOfBlocks -= 1;
   lastBlock.remove();
   updateBlocks();
+  shuffleBlockColors();
   return;
 }
 
@@ -99,18 +110,21 @@ function addColorBlock() {
   newDiv.addEventListener('click', () => {
     if (newDiv.classList.contains(`correct`)) {
       console.log('that is the correct block');
-      block.classList.remove('correct');
+      newDiv.classList.remove('correct');
       score++;
+      updateScore();
       shuffleBlockColors();
     } else {
       console.log('wrong block');
-      block.classList.remove('correct');
+      newDiv.classList.remove('correct');
       score = 0;
+      updateScore();
       shuffleBlockColors();
     }
   });
 
   colorsContainerEl.appendChild(newDiv);
   updateBlocks();
+  shuffleBlockColors();
   return;
 }
